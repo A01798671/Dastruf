@@ -1,11 +1,10 @@
 #include "token.h"
 #include <sstream>
 
-// Constructor de Token
+// Constructor
 Token::Token(TokenType type, const std::string &lexeme, const std::string &literal, int line)
     : type(type), lexeme(lexeme), literal(literal), line(line) {}
 
-// Método para convertir el token a string
 std::string Token::to_string() const
 {
     std::ostringstream oss;
@@ -13,7 +12,6 @@ std::string Token::to_string() const
     return oss.str();
 }
 
-// Método para convertir el tipo de token a string
 std::string Token::token_type_to_string(TokenType type) const
 {
     switch (type)
@@ -102,7 +100,6 @@ std::string Token::token_type_to_string(TokenType type) const
     case TokenType::END:
         return "END";
 
-    // Special token
     case TokenType::EOF_TOKEN:
         return "EOF_TOKEN";
 
