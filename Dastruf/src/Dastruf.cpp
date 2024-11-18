@@ -8,7 +8,7 @@
 #include "token.h"
 #include "lexer.h"
 
-namespace Dastruf
+namespace dastruf
 {
     //-----------------------------------------Private-----------------------------------------------------
     void run(const std::string &source)
