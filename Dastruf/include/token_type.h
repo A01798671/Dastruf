@@ -1,8 +1,7 @@
-using namespace std;
+#ifndef TOKEN_TYPE_H
+#define TOKEN_TYPE_H
 
-#include <iostream>
-
-enum TokenType
+enum class TokenType
 {
     // Single-character tokens
     LEFT_PAREN,
@@ -28,7 +27,7 @@ enum TokenType
     GREATER_EQUAL,
     LESS,
     LESS_EQUAL,
-    TAB,
+    END,
 
     // Literals
     IDENTIFIER,
@@ -60,3 +59,5 @@ enum TokenType
     CONTINUE,
     IMPORT
 };
+
+#endif

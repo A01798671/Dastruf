@@ -1,6 +1,6 @@
 # Variables
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -mconsole
+CXXFLAGS = -std=c++17 -Wall -Wextra -mconsole -Iinclude
 TARGET = Dastruf
 SOURCES = $(wildcard src/*.cpp) # Incluye todos los .cpp en src/
 OBJECTS = $(SOURCES:.cpp=.o)

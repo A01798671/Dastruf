@@ -1,164 +1,146 @@
-using namespace std;
+#include "lexer.h"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include "Token.cpp"
+Lexer::Lexer(const std::string &source) : source(source), start(0), current(0), line(1) {}
 
-class Lexer
+std::vector<Token> Lexer::scan_tokens()
 {
-public:
-    Lexer(const std::string &source) : source(source) {}
-
-    std::vector<Token> scanTokens()
+    while (!is_at_end())
     {
-        while (!isAtEnd())
+        start = current;
+        scan_token();
+    }
+
+    tokens.emplace_back(TokenType::EOF_TOKEN, "", "", line);
+    return tokens;
+}
+
+bool Lexer::is_at_end() const
+{
+    return current >= source.length();
+}
+
+char Lexer::peek()
+{
+    if (is_at_end())
+        return '\0';
+    return source[current];
+}
+
+bool Lexer::match(char expected)
+{
+    if (is_at_end())
+        return false;
+    if (source[current] != expected)
+        return false;
+    current++;
+    return true;
+}
+
+char Lexer::advance()
+{
+    return source[current++];
+}
+
+void Lexer::add_token(TokenType type)
+{
+    add_token(type, "");
+}
+
+void Lexer::add_token(TokenType type, const std::string &literal)
+{
+    std::string text = source.substr(start, current - start);
+    tokens.emplace_back(type, text, literal, line);
+}
+
+void Lexer::scan_token()
+{
+    char c = advance();
+    switch (c)
+    {
+    case '(':
+        add_token(TokenType::LEFT_PAREN);
+        break;
+    case ')':
+        add_token(TokenType::RIGHT_PAREN);
+        break;
+    case '[':
+        add_token(TokenType::LEFT_BRACKET);
+        break;
+    case ']':
+        add_token(TokenType::RIGHT_BRACKET);
+        break;
+    case ',':
+        add_token(TokenType::COMMA);
+        break;
+    case '.':
+        add_token(TokenType::DOT);
+        break;
+    case '-':
+        add_token(TokenType::MINUS);
+        break;
+    case '+':
+        add_token(TokenType::PLUS);
+        break;
+    case ':':
+        add_token(TokenType::COLON);
+        break;
+    case '/':
+        if (match('/'))
         {
-            start = current;
-            scanToken();
+            while (peek() != '\n' && !is_at_end())
+            {
+                advance();
+            }
         }
-
-        tokens.emplace_back(TokenType::EOF_TOKEN, "", "", line);
-        return tokens;
-    }
-
-private:
-    std::string source;
-    std::vector<Token> tokens;
-    int start = 0;
-    int current = 0;
-    int line = 1;
-
-    bool isAtEnd() const
-    {
-        return current >= source.length();
-    }
-
-    void scanToken()
-    {
-        char c = advance();
-        switch (c)
+        else
         {
-        case '(':
-            addToken(TokenType::LEFT_PAREN);
-            break;
-        case ')':
-            addToken(TokenType::RIGHT_PAREN);
-            break;
-        case '[':
-            addToken(TokenType::LEFT_BRACKET);
-            break;
-        case ']':
-            addToken(TokenType::RIGHT_BRACKET);
-            break;
-        case ',':
-            addToken(TokenType::COMMA);
-            break;
-        case '.':
-            addToken(TokenType::DOT);
-            break;
-        case '-':
-            addToken(TokenType::MINUS);
-            break;
-        case '+':
-            addToken(TokenType::PLUS);
-            break;
-        case ':':
-            addToken(TokenType::COLON);
-            break;
-        case '/':
-            if (match('/'))
-            {
-                while (peek() != '\n' && !isAtEnd())
-                {
-                    advance();
-                }
-            }
-            else
-            {
-                addToken(TokenType::SLASH);
-            }
-            break;
-        case '*':
-            if (match('*'))
-                addToken(TokenType::STAR_STAR);
-            else
-                addToken(TokenType::STAR);
-            break;
-        case '%':
-            addToken(TokenType::PERCENT);
-            break;
-        case '!':
-            if (match('='))
-                addToken(TokenType::NOT);
-            else
-                addToken(TokenType::NOT_EQUAL);
-            break;
-        case '=':
-            if (match('='))
-                addToken(TokenType::EQUAL_EQUAL);
-            else
-                addToken(TokenType::EQUAL);
-            break;
-        case '<':
-            if (match('='))
-                addToken(TokenType::LESS_EQUAL);
-            else
-                addToken(TokenType::LESS);
-            break;
-        case '>':
-            if (match('='))
-                addToken(TokenType::GREATER_EQUAL);
-            else
-                addToken(TokenType::GREATER);
-            break;
-        case ' ':
-        case '\r':
-            break;
-        case '\t':
-            addToken(TokenType::TAB);
-            break;
-        case '\n':
-            line++;
-            break;
-        default:
-            std::cerr << "Unexpected character: " << c << " at line " << line << std::endl;
-            break;
+            add_token(TokenType::SLASH);
         }
+        break;
+    case '*':
+        if (match('*'))
+            add_token(TokenType::STAR_STAR);
+        else
+            add_token(TokenType::STAR);
+        break;
+    case '%':
+        add_token(TokenType::PERCENT);
+        break;
+    case '!':
+        if (match('='))
+            add_token(TokenType::NOT_EQUAL);
+        else
+            add_token(TokenType::NOT);
+        break;
+    case '=':
+        if (match('='))
+            add_token(TokenType::EQUAL_EQUAL);
+        else
+            add_token(TokenType::EQUAL);
+        break;
+    case '<':
+        if (match('='))
+            add_token(TokenType::LESS_EQUAL);
+        else
+            add_token(TokenType::LESS);
+        break;
+    case '>':
+        if (match('='))
+            add_token(TokenType::GREATER_EQUAL);
+        else
+            add_token(TokenType::GREATER);
+        break;
+    case ' ':
+        break;
+    case '\t':
+        break;
+    case '\n':
+        line++;
+        break;
+    case '\r':
+        break;
+    default:
+        std::cerr << "Unexpected character: " << c << " at line " << line << std::endl;
+        break;
     }
-
-    char advance()
-    {
-        return source[current++];
-    }
-
-    void addToken(TokenType type)
-    {
-        addToken(type, "");
-    }
-
-    void addToken(TokenType type, const std::string &literal)
-    {
-        std::string text = source.substr(start, current - start);
-        tokens.emplace_back(type, text, literal, line);
-    }
-
-    bool match(char expected)
-    {
-        if (isAtEnd())
-            return false;
-        if (source[current] != expected)
-            return false;
-        current++;
-        return true;
-    }
-
-    char peek()
-    {
-        if (isAtEnd())
-            return '\0';
-        return source[current];
-    }
-};
+}
