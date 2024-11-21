@@ -1,5 +1,4 @@
 /.vscode
 /build
-/Dastruf/Makefile
-/Dastruf/dastruf.exe
+Makefile
 *.o
