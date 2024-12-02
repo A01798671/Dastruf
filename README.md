@@ -1,3 +1,0 @@
-# Dastruf
-
-Lenguaje de programación

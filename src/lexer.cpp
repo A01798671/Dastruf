@@ -58,6 +58,9 @@ void Lexer::scan_token() {
     case '.':
         add_token(TokenType::DOT);
         break;
+    case ',':
+        add_token(TokenType::COMMA);
+        break;
     case '-':
         add_token(TokenType::MINUS);
         break;
@@ -105,6 +108,7 @@ void Lexer::scan_token() {
     case '\t':
     break;
     case '\n':
+        add_token(TokenType::EOL_TOKEN);
         line++;
         break;
     case '"':

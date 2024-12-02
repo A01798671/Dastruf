@@ -55,7 +55,8 @@ std::string Token::token_type_to_string(TokenType type) const {
         case TokenType::WHILE: return "WHILE";
         case TokenType::END: return "END";
 
-        // Special token
+        // Special tokens
+        case TokenType::EOL_TOKEN: return "EOL_TOKEN";
         case TokenType::EOF_TOKEN: return "EOF_TOKEN";
 
         default: return "UNKNOWN_TOKEN";
